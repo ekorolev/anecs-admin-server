@@ -1,3 +1,5 @@
+const crypto = require('crypto')
+
 /**
  * Returns all anecdotes from database
  */
@@ -19,18 +21,47 @@ exports.getAnecdotes = db => async (req, res) => {
     .limit(size)
     .toArray()
 
-  res.json(anecdotes)
+  const count = await db.collection('anecdotes')
+    .countDocuments(findOption)
+
+  return res.json({
+    anecdotes,
+    count
+  })
+}
+
+/**
+ * Returns anecdote count
+ */
+exports.getAnecdotesCount = db => async (req, res) => {
+  const count = await db.collection('anecdotes')
+    .countDocuments({})
+
+  return res.json(count)
 }
 
 /**
  * Add an anecdote to database
  */
 exports.createAnecdote = db => async(req, res) => {
+  const HMAC_SECRET = process.env.HMAC_SECRET
+  const COMPARE_HASH = process.env.COMPARE_HASH
+
+  if (!req.body.secretCode) {
+    return res.status(401).json({ error: 'Access denied' })
+  }
+  const hash = crypto.createHmac('sha256', HMAC_SECRET)
+    .update(req.body.secretCode)
+    .digest('hex')
+
+  if (hash !== COMPARE_HASH) {
+    return res.status(401).json({ error: 'Access denied' })
+  }
+
   const result = await db.collection('anecdotes').insertOne({
     createdAt: Date.now(),
     text: req.body.text,
     author: req.body.author
   })
-  console.log(result.ops[0])
-  res.json({ message: 'OK' })
+  res.json({ message: 'OK', anecdote: result.ops[0] })
 }
