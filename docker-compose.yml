@@ -10,7 +10,11 @@ services:
       MONGO_CONNECTION: mongodb://mongo
       MONGO_DATABASE: anecdotes
     depends_on:
-      - mongo
+      - mongo_healthcheck
   mongo:
     image: mongo:latest
     container_name: 'mongo'
+  mongo_healthcheck:
+    image: healthcheck/mongo:latest
+    depends_on:
+      - mongo
