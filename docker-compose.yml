@@ -1,0 +1,16 @@
+version: '3.1'
+services:
+  nodejs:
+    image: aksyline/anecdotes:latest
+    ports:
+      - "80:2999"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 2999
+      MONGO_CONNECTION: mongodb://mongo
+      MONGO_DATABASE: anecdotes
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    container_name: 'mongo'
