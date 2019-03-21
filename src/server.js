@@ -1,44 +1,112 @@
-const express = require('express')
-const bodyParser = require('body-parser')
+const Hapi = require('hapi')
+const mongoose = require('mongoose')
+const anecdotes = require('./models/Anecdotes')
+const crypto = require('crypto')
 const path = require('path')
+const inert = require('inert')
+require('dotenv').config()
 
-module.exports = class {
-  constructor(env, db, controllers) {
-    this.env = env
-    this.db = db
-    this.controllers = controllers
-    this.port = this.env.get('PORT', 3000)
-    this.app = express()
-  
-    this.configure()
+mongoose.connect(process.env.MONGO_CONNECTION, { useNewUrlParser: true })
+
+mongoose.connection.once('open', () => {
+  console.log('connected to database')
+})
+
+const server = Hapi.server({
+  port: process.env.PORT,
+  host: process.env.HOST,
+  routes: {
+    files: {
+        relativeTo: path.join(__dirname, 'public')
+    }
   }
+})
 
-  configure() {
-    const app = this.app
+const init = async () => {
+  await server.register(inert)
+  server.route([
+    {
+      method: 'GET',
+      path: '/{param*}',
+      handler: {
+        directory: {
+          path: '.',
+          redirectToSlash: true,
+          index: true,
+        }
+      }
+    },
+    {
+      method: 'GET',
+      path: '/anecdotes',
+      handler: async (req) => {
+        const findOptions = {}
+        let {
+          before, size
+        } = req.query
+        if (before) {
+          findOptions.createdAt = { $lt: parseInt(before) }
+        }
+        size = size ? parseInt(size) : 10
+        const anecs = await anecdotes.find(findOptions).sort({ createdAt: -1 }).limit(size)
+        const count = await anecdotes.countDocuments(findOptions)
+        return {
+          anecdotes: anecs,
+          count
+        }
+      }
+    },
+    {
+      method: 'GET',
+      path: '/anecdotes/count',
+      handler: () => {
+        return anecdotes.countDocuments()
+      }
+    },
+    {
+      method: 'POST',
+      path: '/anecdotes/create',
+      handler: async (req, reply) => {
+        const hmac_secret = process.env.HMAC_SECRET
+        const compareHash = process.env.COMPARE_HASH
+        const {
+          secretCode,
+          text,
+          author
+        } = req.payload
 
-    app.use((_, res, next) => {
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, POST')
-      res.header('Access-Control-Allow-Headers', 'Content-Type')
-      next()
-    })
-    app.use(bodyParser.json())
-    app.use(bodyParser.urlencoded({ extended: true }))
-    app.use(express.static(path.join(__dirname, 'public')))
-  
-    this.route('get', '/anecdotes', 'getAnecdotes')
-    this.route('get', '/anecdotes/count', 'getAnecdotesCount')
-    this.route('post', '/anecdotes/create', 'createAnecdote')
-  }
+        if (!secretCode) {
+          reply.code(401)
+          return { error: 'Access denied' }
+        }
 
-  route(method, route, controller) {
-    const self = this
-    self.app[method](route, function () {
-      return self.controllers[controller].apply(self.controllers, arguments)
-    })
-  }
+        const hash = crypto.createHmac('sha256', hmac_secret)
+          .update(secretCode)
+          .digest('hex')
 
-  listen() {
-    return this.app.listen(this.port, () => console.log(`Server started at port ${this.port}`))
-  }
+        if (hash !== compareHash) {
+          reply.code(401)
+          return{ error: 'Access denied' }
+        }
+      
+        const anecdote = new anecdotes({
+          createdAt: Date.now(),
+          text,
+          author
+        })
+        await anecdote.save()
+        return { message: 'OK', anecdote }
+      }
+    }
+  ])
+
+  await server.start()
+  console.log(`Server running at: ${server.info.uri}`)
 }
+
+process.on('unhandledRejection', err => {
+  console.log(err)
+  process.exit(1)
+})
+
+module.exports = init
