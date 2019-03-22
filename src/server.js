@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const path = require('path')
 const inert = require('inert')
 const routes = require('./routes')
+const cors = require('hapi-cors')
 require('dotenv').config()
 
 mongoose.connect(process.env.MONGO_CONNECTION, { useNewUrlParser: true })
@@ -23,6 +24,13 @@ const server = Hapi.server({
 
 const init = async () => {
   await server.register(inert)
+  await server.register({
+    plugin: cors,
+    options: {
+      headers: ['Accept', 'Content-Type', 'Token']
+    }
+    
+  })
   server.route(    {
     method: 'GET',
     path: '/{param*}',
