@@ -4,8 +4,9 @@ const {
   Token
 } = require('../../models')
 const { errorMessages } = require('../../utils/messages')
-const ACCESS_TOKEN_EXPIRES = 30000//60 * 60 * 1000
-const REFRESH_TOKEN_EXPIRES = 60000//180 * 24 * 60 * 60 * 1000
+
+const ACCESS_TOKEN_EXPIRES = 60 * 60 * 1000
+const REFRESH_TOKEN_EXPIRES = 180 * 24 * 60 * 60 * 1000
 
 const badSigninResponse = {
   error: 'Unauthorized request',
