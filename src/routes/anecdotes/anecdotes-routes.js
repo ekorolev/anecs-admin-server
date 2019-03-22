@@ -1,7 +1,8 @@
 const {
   all,
   count,
-  create
+  create,
+  unpublished
 } = require('./anecdotes-controllers')
 const {
   checkAccess,
@@ -19,6 +20,18 @@ module.exports = [
     method: 'GET',
     path: '/anecdotes/count',
     handler: count
+  },
+  {
+    method: 'GET',
+    path: '/anecdotes/unpublished',
+    handler: unpublished,
+    options: {
+      pre: [
+        tokenValidation(),
+        userExtraction(),
+        checkAccess('admin')
+      ]
+    }
   },
   {
     method: 'POST',
