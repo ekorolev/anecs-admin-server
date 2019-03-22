@@ -1,5 +1,4 @@
-const Anecdote = require('../../models/Anecdote')
-const crypto = require('crypto')
+const { Anecdote } = require('../../models')
 
 exports.all = async (req) => {
   const findOptions = {}
@@ -23,27 +22,10 @@ exports.count = () => {
 }
 
 exports.create = async (req, reply) => {
-  const hmac_secret = process.env.HMAC_SECRET
-  const compareHash = process.env.COMPARE_HASH
   const {
-    secretCode,
     text,
     author
   } = req.payload
-
-  if (!secretCode) {
-    reply.code(401)
-    return { error: 'Access denied' }
-  }
-
-  const hash = crypto.createHmac('sha256', hmac_secret)
-    .update(secretCode)
-    .digest('hex')
-
-  if (hash !== compareHash) {
-    reply.code(401)
-    return{ error: 'Access denied' }
-  }
 
   const anecdote = new Anecdote({
     createdAt: Date.now(),

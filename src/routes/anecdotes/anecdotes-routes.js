@@ -3,6 +3,11 @@ const {
   count,
   create
 } = require('./anecdotes-controllers')
+const {
+  checkAccess,
+  tokenValidation,
+  userExtraction
+} = require('../../middlewares')
 
 module.exports = [
   {
@@ -17,6 +22,13 @@ module.exports = [
   },
   {
     method: 'POST',
+    options: {
+      pre: [
+        tokenValidation(),
+        userExtraction(),
+        checkAccess('admin')
+      ]
+    },
     path: '/anecdotes/create',
     handler: create
   }
