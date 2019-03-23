@@ -27,7 +27,7 @@ exports.unpublished = async () => {
   return await Anecdote.find({ status: Anecdote.statuses.FOR_PUBLICATION })
 }
 
-exports.create = async (req, reply) => {
+exports.create = async (req) => {
   const {
     text,
     author,
@@ -36,7 +36,8 @@ exports.create = async (req, reply) => {
 
   const anecdote = new Anecdote({
     createdAt: Date.now(),
-    status: status || Anecdote.statuses.PUBLISHED, 
+    status: status || Anecdote.statuses.PUBLISHED,
+    publishedAt: status === Anecdote.statuses.PUBLISHED ? Date.now() : null,
     text,
     author
   })
