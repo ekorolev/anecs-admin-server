@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +20,10 @@
     "uuid4": "^1.1.4"
   },
   "devDependencies": {
-    "nodemon": "^1.18.10"
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
+    "mongo-unit": "^1.4.4",
+    "nodemon": "^1.18.10",
+    "sinon": "^7.3.0"
   }
 }
