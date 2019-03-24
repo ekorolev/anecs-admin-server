@@ -29,7 +29,7 @@ let httpsServer = null
 if (process.env.HTTPS) {
   httpsServer = new Hapi.Server({
     host: '0.0.0.0',
-    port: 443,
+    port: 444,
     tls
   })
 }
