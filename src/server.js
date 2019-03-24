@@ -1,11 +1,18 @@
 const Hapi = require('hapi')
 const mongoose = require('mongoose')
 const path = require('path')
+const fs = require('fs')
 const routes = require('./routes')
 const cors = require('hapi-cors')
 const Workers = require('./workers')
 require('dotenv').config()
 const publishWorker = new Workers.PublishWorker(process.env.PUBLISING_INTERVAL)
+let tls = {}
+if (process.env.HTTPS) {
+  tls.key = fs.readFileSync(process.env.PK_PATH, 'utf8')
+  tls.cert = fs.readFileSync(process.env.CERT_PATH, 'utf8')
+}
+
 
 mongoose.connect(process.env.MONGO_CONNECTION, { useNewUrlParser: true })
 
@@ -14,23 +21,31 @@ mongoose.connection.once('open', () => {
   publishWorker.start()
 })
 
-const server = Hapi.server({
-  port: process.env.PORT,
-  host: process.env.HOST,
+const httpServer = new Hapi.Server({
+  host: '0.0.0.0',
+  port: process.env.PORT
 })
+let httpsServer = null
+if (process.env.HTTPS) {
+  httpsServer = new Hapi.Server({
+    host: '0.0.0.0',
+    port: 443,
+    tls
+  })
+}
 
-const init = async () => {
-  await server.register({
+const init = async (serv) => {
+  await serv.register({
     plugin: cors,
     options: {
       headers: ['Accept', 'Content-Type', 'Token']
     }
     
   })
-  server.route(routes)
+  serv.route(routes)
 
-  await server.start()
-  console.log(`Server running at: ${server.info.uri}`)
+  await serv.start()
+  console.log(`Server running at: ${serv.info.uri}`)
 }
 
 process.on('unhandledRejection', err => {
@@ -38,4 +53,9 @@ process.on('unhandledRejection', err => {
   process.exit(1)
 })
 
-module.exports = init
+module.exports = async function () {
+  await init(httpServer)
+  if (process.env.HTTPS) {
+    await init(httpsServer)
+  }
+}
