@@ -22,8 +22,7 @@ const register = async (server, options) => {
 
       return {
         isValid: true,
-        credentials: { token },
-        artifacts: { user }
+        credentials: { token, user: user.getVisibleUser() }
       }
     }
   })

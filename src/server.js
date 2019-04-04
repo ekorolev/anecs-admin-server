@@ -1,6 +1,5 @@
 const Hapi = require('hapi')
 const mongoose = require('mongoose')
-const routes = require('./routes')
 const cors = require('hapi-cors')
 require('dotenv').config()
 const Models = require('./models')
@@ -32,12 +31,7 @@ const init = async (serv) => {
   serv.app.models = mongoose.models
 
   await serv.register(require('./modules/auth'))
-  serv.route({
-    method: 'GET',
-    path: '/',
-    handler: () => 'Idi nahui'
-  })
-  serv.route(routes)
+  await serv.register(require('./modules/api'))
 
   await serv.start()
   console.log(`Server running at: ${serv.info.uri}`)

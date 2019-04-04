@@ -33,4 +33,12 @@ UserSchema.methods.checkPassword = function (pass) {
   return hash === this.passwordHash
 }
 
+UserSchema.methods.getVisibleUser = function () {
+  return {
+    _id: this._id,
+    username: this.username,
+    role: this.role
+  }
+}
+
 module.exports = mongoose.model('users', UserSchema)
