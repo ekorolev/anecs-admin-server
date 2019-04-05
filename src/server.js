@@ -4,12 +4,28 @@ const cors = require('hapi-cors')
 require('dotenv').config()
 const Models = require('./models')
 
-const httpServer = new Hapi.Server({
-  host: process.env.HOST || '0.0.0.0',
-  port: process.env.PORT
-})
+// Configure server, register plugins
+const configureServer = async (server, models) => {
+  if (!server) {
+    server = new Hapi.Server({
+      host: process.env.HOST || '0.0.0.0',
+      port: process.env.PORT || 3501
+    })
+  }
+  await server.register({
+    plugin: cors,
+    options: {
+      headers: ['Accept', 'Content-Type', 'Authentication']
+    }
+  })
+  server.app.models = models
+  await server.register(require('./modules/auth'))
+  await server.register(require('./modules/api'))
+  return server
+}
 
-const init = async (serv) => {
+// Configure database, create connect
+const configureDatabase = async () => {
   const mongoConnect = () => new Promise((resolve, reject) => {
     mongoose.connect(process.env.MONGO_CONNECTION, {
       useNewUrlParser: true,
@@ -18,25 +34,18 @@ const init = async (serv) => {
     mongoose.connection.once('open', resolve)
     mongoose.connection.once('error', reject)
   })
-
   await mongoConnect()
-  await serv.register({
-    plugin: cors,
-    options: {
-      headers: ['Accept', 'Content-Type', 'Token']
-    }
-  })
-
-  // add models to app
-  serv.app.models = mongoose.models
-
-  await serv.register(require('./modules/auth'))
-  await serv.register(require('./modules/api'))
-
-  await serv.start()
-  console.log(`Server running at: ${serv.info.uri}`)
 }
 
-module.exports = async function () {
-  await init(httpServer)
+const httpServer = new Hapi.Server({
+  host: process.env.HOST || '0.0.0.0',
+  port: process.env.PORT || 3501
+})
+
+exports.configureServer = configureServer
+exports.boot = async function () {
+  await configureDatabase()
+  await configureServer(httpServer, Models)
+  await httpServer.start()
+  console.log(`Server started at ${httpServer.info.uri}`)
 }

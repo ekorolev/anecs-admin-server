@@ -1,2 +1,2 @@
 const init = require('./src/server')
-init()
+init.boot()

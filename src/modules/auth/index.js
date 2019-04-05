@@ -4,8 +4,8 @@ const register = async (server, options) => {
   await server.register(AuthBearer)
   server.auth.strategy('simple', 'bearer-access-token', {
     validate: async (request, token, h) => {
-      const Token = server.app.models.tokens
-      const User = server.app.models.users
+      const Token = server.app.models.Token
+      const User = server.app.models.User
 
       const tokenFromDb = await Token.findByAccessToken(token)
       if (!tokenFromDb) {

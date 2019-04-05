@@ -1,8 +1,9 @@
 const Boom = require('boom')
+const MONGOOSE_DUPLICATE_ERROR = 11000
 
 module.exports = server => {
-  const User = server.app.models.users
-  const Token = server.app.models.tokens
+  const User = server.app.models.User
+  const Token = server.app.models.Token
 
   return {
     async getCurrentUser (request, h) {
@@ -42,6 +43,9 @@ module.exports = server => {
           refreshToken: token.refreshToken
         }
       } catch(e) {
+        if (e.code === MONGOOSE_DUPLICATE_ERROR) {
+          return Boom.unauthorized('That username is already created')
+        }
         return Boom.badImplementation(e)
       }
     },
@@ -56,7 +60,7 @@ module.exports = server => {
         return Boom.unauthorized('invalid token')
       }
       if (Date.now() > token.refreshTokenExpiresIn) {
-        await Token.remove()
+        await token.remove()
         return Boom.unauthorized('refresh token expired')
       }
       token.refresh()
