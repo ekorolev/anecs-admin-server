@@ -10,6 +10,7 @@ const userFactory = require('./factories/users')
 describe('Check authentication works well', () => {
   let mongoUrl
   let server
+  const prefix = '/api/users'
 
   before(async function () {
     // My MacOS can't connect to MongoUnit fast
@@ -26,7 +27,7 @@ describe('Check authentication works well', () => {
   it('Make /me request without token, should 401 status', async () => {
     const response = await server.inject({
       method: 'GET',
-      url: '/me'
+      url: `${prefix}/me`
     })
     expect(response.statusCode).eq(401, 'status code must be 401')
   })
@@ -34,7 +35,7 @@ describe('Check authentication works well', () => {
   it('Make /me request with random token, should 401 status', async () => {
     const response = await server.inject({
       method: 'GET',
-      url: '/me',
+      url: `${prefix}/me`,
       headers: {
         authorization: `Bearer ${faker.random.uuid()}`
       }
@@ -45,7 +46,7 @@ describe('Check authentication works well', () => {
   it('Try to register new user, should return token', async () => {
     const response = await server.inject({
       method: 'POST',
-      url: '/register',
+      url: `${prefix}/register`,
       payload: {
         username: faker.random.word(),
         password: faker.random.uuid()
@@ -61,7 +62,7 @@ describe('Check authentication works well', () => {
     await user.save()
     const response = await server.inject({
       method: 'POST',
-      url: '/register',
+      url: `${prefix}/register`,
       payload: {
         username: user.username,
         password: faker.random.uuid()
@@ -79,7 +80,7 @@ describe('Check authentication works well', () => {
     await user.save()
     const response = await server.inject({
       method: 'POST',
-      url: '/login',
+      url: `${prefix}/login`,
       payload: {
         username: user.username,
         password: `modify_${password}`
@@ -96,7 +97,7 @@ describe('Check authentication works well', () => {
     await user.save()
     const response = await server.inject({
       method: 'POST',
-      url: '/login',
+      url: `${prefix}/login`,
       payload: {
         username: user.username,
         password
@@ -114,7 +115,7 @@ describe('Check authentication works well', () => {
     await token.save()
     const response = await server.inject({
       method: 'GET',
-      url: '/me',
+      url: `${prefix}/me`,
       headers: {
         authorization: `Bearer ${token.accessToken}`
       }
@@ -133,7 +134,7 @@ describe('Check authentication works well', () => {
     await token.save()
     const response = await server.inject({
       method: 'GET',
-      url: '/me',
+      url: `${prefix}/me`,
       headers: {
         authorization: `Bearer ${token.accessToken}`
       }
@@ -151,7 +152,7 @@ describe('Check authentication works well', () => {
     await token.save()
     const response = await server.inject({
       method: 'POST',
-      url: '/refreshToken',
+      url: `${prefix}/refreshToken`,
       payload: {
         accessToken: token.accessToken,
         refreshToken: token.refreshToken
@@ -173,7 +174,7 @@ describe('Check authentication works well', () => {
     await token.save()
     const response = await server.inject({
       method: 'POST',
-      url: '/refreshToken',
+      url: `${prefix}/refreshToken`,
       payload: {
         accessToken: token.accessToken,
         refreshToken: token.refreshToken

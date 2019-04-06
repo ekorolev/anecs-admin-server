@@ -3,6 +3,9 @@ const mongoose = require('mongoose')
 const cors = require('hapi-cors')
 require('dotenv').config()
 const Models = require('./models')
+const HapiSwagger = require('hapi-swagger')
+const Inert = require('inert')
+const Vision = require('vision')
 
 // Configure server, register plugins
 const configureServer = async (server, models) => {
@@ -20,7 +23,27 @@ const configureServer = async (server, models) => {
   })
   server.app.models = models
   await server.register(require('./modules/auth'))
-  await server.register(require('./modules/api'))
+  await server.register(require('./modules/api'), {
+    routes: {
+      prefix: '/api'
+    }
+  })
+  if (process.env.SWAGGER === 'enable') {
+    await server.register([
+      Inert,
+      Vision,
+      {
+        plugin: HapiSwagger,
+        options: {
+          basePath: '/api',
+          info: {
+            title: 'API Documentation',
+            version: '1.0.0'
+          }
+        }
+      }
+    ])
+  }
   return server
 }
 
