@@ -1,5 +1,5 @@
-module.exports = {
-  Anecdote: require('./Anecdote'),
-  User: require('./User'),
-  Token: require('./Token')
-}
+module.exports = mongoose => ({
+  Anecdote: require('./Anecdote')(mongoose),
+  User: require('./User')(mongoose),
+  Token: require('./Token')(mongoose)
+})

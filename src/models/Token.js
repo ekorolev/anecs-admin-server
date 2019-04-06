@@ -43,4 +43,4 @@ TokenSchema.methods.refresh = function () {
   this.refreshedAt = Date.now()
 }
 
-module.exports = mongoose.model('tokens', TokenSchema)
+module.exports = mongoose => mongoose.model('tokens', TokenSchema)

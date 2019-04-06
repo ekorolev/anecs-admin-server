@@ -1,9 +1,15 @@
 const users = require('./users')
+const anecdotes = require('./anecdotes')
 
 const register = async (server, options) => {
   await server.register(users, {
     routes: {
       prefix: '/users'
+    }
+  })
+  await server.register(anecdotes, {
+    routes: {
+      prefix: '/anecdotes'
     }
   })
 }

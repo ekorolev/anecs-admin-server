@@ -68,7 +68,7 @@ const httpServer = new Hapi.Server({
 exports.configureServer = configureServer
 exports.boot = async function () {
   await configureDatabase()
-  await configureServer(httpServer, Models)
+  await configureServer(httpServer, Models(mongoose))
   await httpServer.start()
   console.log(`Server started at ${httpServer.info.uri}`)
 }

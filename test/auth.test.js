@@ -1,27 +1,20 @@
-const mongoUnit = require('mongo-unit')
-const mongoose = require('mongoose')
-const mongoUnitConnect = mongoUnit.start()
-const Models = require('../src/models')
 const { expect } = require('chai')
 const configureServer = require('../src/server').configureServer
 const faker = require('faker')
 const userFactory = require('./factories/users')
+const mockedDb = require('./mockedDb')
 
 describe('Check authentication works well', () => {
-  let mongoUrl
   let server
   const prefix = '/api/users'
+  let Models
 
   before(async function () {
     // My MacOS can't connect to MongoUnit fast
     this.timeout(10000)
-    mongoUrl = await mongoUnitConnect
+    Models = await mockedDb.connect()
     server = await configureServer(null, Models)
     await server.start()
-    return mongoose.connect(mongoUrl, {
-      useNewUrlParser: true,
-      useCreateIndex: true
-    })
   })
 
   it('Make /me request without token, should 401 status', async () => {
@@ -186,8 +179,7 @@ describe('Check authentication works well', () => {
   })
 
   after(async () => {
-    await mongoose.disconnect()
+    await mockedDb.disconnect()
     await server.stop()
-    return mongoUnit.stop()
   })
 })

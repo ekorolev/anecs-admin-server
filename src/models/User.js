@@ -41,4 +41,4 @@ UserSchema.methods.getVisibleUser = function () {
   }
 }
 
-module.exports = mongoose.model('users', UserSchema)
+module.exports = mongoose => mongoose.model('users', UserSchema)

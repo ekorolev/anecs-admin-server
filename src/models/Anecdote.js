@@ -17,4 +17,4 @@ AnecdoteSchema.statics.statuses = {
   FOR_PUBLICATION: 'FOR_PUBLICATION'
 }
 
-module.exports = mongoose.model('anecdotes', AnecdoteSchema)
+module.exports = mongoose => mongoose.model('anecdotes', AnecdoteSchema)
