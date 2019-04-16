@@ -17,8 +17,8 @@ describe('Check authentication works well', () => {
     await server.start()
   })
   beforeEach(async () => {
-    await Models.User.remove({})
-    await Models.Token.remove({})
+    await Models.User.deleteMany({})
+    await Models.Token.deleteMany({})
   })
 
   it('Make /me request without token, should 401 status', async () => {
@@ -55,7 +55,10 @@ describe('Check authentication works well', () => {
   })
 
   it('Try to register new user, but user is already exist', async () => {
-    const user = new Models.User(userFactory.fakeUser())
+    const user = new Models.User({
+      username: 'TestUser',
+      passwordHash: 'TestPassword'
+    })
     await user.save()
     const response = await server.inject({
       method: 'POST',

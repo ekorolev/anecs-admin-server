@@ -3,7 +3,8 @@ module.exports = server => {
 
   return {
     async all (request, h) {
-      return Anecdote.find()
+      const anecdotes = (await Anecdote.find()).map(a => a.getVisibleAnecdote())
+      return anecdotes
     }
   }
 }

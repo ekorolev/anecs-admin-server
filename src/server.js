@@ -6,6 +6,7 @@ const Models = require('./models')
 const HapiSwagger = require('hapi-swagger')
 const Inert = require('inert')
 const Vision = require('vision')
+const Boom = require('boom')
 
 // Configure server, register plugins
 const configureServer = async (server, models) => {

@@ -6,7 +6,7 @@ const anecdote = Joi.object({
 	status: Joi.string().valid(['FOR_PUBLICATION', 'PUBLISHED']).required(),
 	createdAt: Joi.date().required(),
 	publishedAt: Joi.date(),
-	_id: Joi.string().required()
+	_id: Joi.required()
 })
 
 const anecdotes = Joi.array().items(anecdote)
