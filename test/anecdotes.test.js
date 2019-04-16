@@ -61,6 +61,25 @@ describe('Check anecdotes api works well', () => {
     expect(payload[0]._id).eq(anecdote._id.toString())
   })
 
+  it('Delete anecdote', async () => {
+    const anecdote = new Models.Anecdote({
+      text: 'some long text',
+      author: 'admin',
+      status: 'PUBLISHED',
+      createdAt: Date.now()
+    })
+    await anecdote.save()
+    const response = await server.inject({
+      method: 'POST',
+      url: `${prefix}/${anecdote._id}/delete`,
+      headers: {
+        authorization: `Bearer ${token.accessToken}`
+      }
+    })
+    const anecs = await Models.Anecdote.find({})
+    expect(anecs.length).eq(0)
+  })
+
   after(async () => {
     await mockedDb.disconnect()
     await server.stop()

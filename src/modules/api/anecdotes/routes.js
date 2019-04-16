@@ -1,3 +1,5 @@
+const Joi = require('joi')
+
 module.exports = server => {
   const handlers = require('./handlers')(server)
   const validation = require('./validation')
@@ -14,6 +16,20 @@ module.exports = server => {
         response: {
           status: {
             200: validation.list
+          }
+        }
+      }
+    },
+    {
+      method: 'POST',
+      path: '/{id}/delete',
+      handler: handlers.delete,
+      options: {
+        description: 'Delete an specific anecdote',
+        tags: ['api', 'anecdotes'],
+        validate: {
+          params: {
+            id: Joi.string().required()
           }
         }
       }

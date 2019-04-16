@@ -5,6 +5,12 @@ module.exports = server => {
     async all (request, h) {
       const anecdotes = (await Anecdote.find()).map(a => a.getVisibleAnecdote())
       return anecdotes
+    },
+
+    async delete (request) {
+      const { id } = request.params
+      await Anecdote.deleteOne({ _id: id })
+      return { message: 'OK' }
     }
   }
 }
