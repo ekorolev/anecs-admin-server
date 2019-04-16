@@ -5,7 +5,7 @@ const mockedDb = require('./mockedDb')
 
 describe('Check anecdotes api works well', () => {
   let server
-  const prefix = '/api/anecdotes'
+  const prefix = '/api/v1/anecdotes'
   let token
   let Models
 

@@ -2,6 +2,8 @@
 
 module.exports = server => {
   const handlers = require('./handlers')(server)
+  const authValidation = server.app.auth.validation
+
   return [
     {
       method: 'GET',
@@ -11,6 +13,11 @@ module.exports = server => {
         description: 'Get current user',
         notes: 'Return detailed info about current user',
         tags: ['api', 'auth'],
+        validate: {
+          headers: {
+            'authorization': authValidation.authorizationHeader
+          }
+        },
         response: {
           status: {
             200: validation.currentUser
@@ -65,7 +72,10 @@ module.exports = server => {
         notes: 'Refreshes access token if provided refresh token is valid',
         tags: ['api', 'auth'],
         validate: {
-          payload: validation.refreshValidation
+          payload: validation.refreshValidation,
+          headers: {
+            authorization: authValidation.authorizationHeader
+          }
         },
         response: {
           status: {

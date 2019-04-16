@@ -27,6 +27,7 @@ const register = async (server, options) => {
     }
   })
   server.auth.default('simple')
+  server.app.auth = { validation: require('./validation') }
 }
 
 module.exports = {

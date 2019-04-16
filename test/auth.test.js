@@ -6,7 +6,7 @@ const mockedDb = require('./mockedDb')
 
 describe('Check authentication works well', () => {
   let server
-  const prefix = '/api/users'
+  const prefix = '/api/v1/users'
   let Models
 
   before(async function () {
@@ -153,7 +153,7 @@ describe('Check authentication works well', () => {
     })
     const body = JSON.parse(response.payload)
     expect(response.statusCode).eq(200)
-    expect(body).to.have.all.keys(['accessToken', 'refreshToken', 'message'])
+    expect(body).to.have.all.keys(['accessToken', 'refreshToken'])
     expect(body.accessToken).not.eq(token.accessToken, 'access token should be changed')
     expect(body.refreshToken).not.eq(token.refreshToken, 'refresh token should be changed')
   })

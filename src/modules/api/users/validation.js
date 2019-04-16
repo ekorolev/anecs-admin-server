@@ -5,6 +5,7 @@ const password = Joi.string().min(5)
 const token = Joi.string()
 const role = Joi.string().valid('admin', 'user')
 const id = Joi.string()
+const authorizationHeader = Joi.string().regex(/^Bearer\ .+/)
 
 const currentUser = Joi.object({
   username: username.required(),
@@ -33,3 +34,4 @@ exports.validLoginResponse = Joi.object({
 }).label('Access credentials')
 
 exports.currentUser = currentUser
+exports.authorizationHeader = authorizationHeader.required()
