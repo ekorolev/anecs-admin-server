@@ -11,11 +11,6 @@ module.exports = server => {
       options: {
         description: 'Get all anecdotes',
         tags: ['api', 'anecdotes'],
-        validate: {
-          headers: {
-            authorization: authValidation.authorizationHeader
-          }
-        },
         response: {
           status: {
             200: validation.list

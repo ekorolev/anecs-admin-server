@@ -37,7 +37,6 @@ module.exports = server => {
         const token = Token.createToken(user._id)
         await token.save()
         return {
-          message: 'OK',
           accessToken: token.accessToken,
           refreshToken: token.refreshToken
         }

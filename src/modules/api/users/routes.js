@@ -13,11 +13,6 @@ module.exports = server => {
         description: 'Get current user',
         notes: 'Return detailed info about current user',
         tags: ['api', 'auth'],
-        validate: {
-          headers: {
-            'authorization': authValidation.authorizationHeader
-          }
-        },
         response: {
           status: {
             200: validation.currentUser
@@ -73,9 +68,6 @@ module.exports = server => {
         tags: ['api', 'auth'],
         validate: {
           payload: validation.refreshValidation,
-          headers: {
-            authorization: authValidation.authorizationHeader
-          }
         },
         response: {
           status: {

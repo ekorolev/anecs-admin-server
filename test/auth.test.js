@@ -16,6 +16,10 @@ describe('Check authentication works well', () => {
     server = await configureServer(null, Models)
     await server.start()
   })
+  beforeEach(async () => {
+    await Models.User.remove({})
+    await Models.Token.remove({})
+  })
 
   it('Make /me request without token, should 401 status', async () => {
     const response = await server.inject({
@@ -41,13 +45,13 @@ describe('Check authentication works well', () => {
       method: 'POST',
       url: `${prefix}/register`,
       payload: {
-        username: faker.random.word(),
-        password: faker.random.uuid()
+        username: 'TestUsername',
+        password: 'TestPassword'
       }
     })
     const body = JSON.parse(response.payload)
     expect(response.statusCode).eq(200, 'Status code must be 200')
-    expect(body).to.have.all.keys(['accessToken', 'refreshToken', 'message'])
+    expect(body).to.have.all.keys(['accessToken', 'refreshToken'])
   })
 
   it('Try to register new user, but user is already exist', async () => {
@@ -68,7 +72,10 @@ describe('Check authentication works well', () => {
   })
 
   it ('Try to login, user exists, but password is incorrect', async () => {
-    const user = new Models.User(userFactory.fakeUser())
+    const user = new Models.User({
+      username: 'TestUser',
+      passwordHash: 'TestPassword'
+    })
     const password = user.passwordHash
     await user.save()
     const response = await server.inject({
@@ -85,7 +92,10 @@ describe('Check authentication works well', () => {
   })
 
   it('Try to login, user exists, credentials are correct', async () => {
-    const user = new Models.User(userFactory.fakeUser())
+    const user = new Models.User({
+      username: 'TestUser',
+      passwordHash: 'TestPassword'
+    })
     const password = user.passwordHash
     await user.save()
     const response = await server.inject({
@@ -98,11 +108,14 @@ describe('Check authentication works well', () => {
     })
     const body = JSON.parse(response.payload)
     expect(response.statusCode).eq(200)
-    expect(body).to.have.all.keys(['accessToken', 'refreshToken', 'message'])
+    expect(body).to.have.all.keys(['accessToken', 'refreshToken'])
   })
 
   it('Try to request /me with correct token', async () => {
-    const user = new Models.User(userFactory.fakeUser())
+    const user = new Models.User({
+      username: 'TestUser',
+      passwordHash: 'TestPassword'
+    })
     await user.save()
     const token = Models.Token.createToken(user._id)
     await token.save()

@@ -35,7 +35,7 @@ UserSchema.methods.checkPassword = function (pass) {
 
 UserSchema.methods.getVisibleUser = function () {
   return {
-    _id: this._id,
+    _id: this._id.toString(),
     username: this.username,
     role: this.role
   }
