@@ -67,7 +67,6 @@ module.exports = server => {
       try {
         await token.save()
         return {
-          message: 'OK',
           accessToken: token.accessToken,
           refreshToken: token.refreshToken
         }

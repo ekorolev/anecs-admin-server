@@ -25,7 +25,7 @@ const configureServer = async (server, models) => {
   await server.register(require('./modules/auth'))
   await server.register(require('./modules/api'), {
     routes: {
-      prefix: '/api'
+      prefix: '/api/v1'
     }
   })
   if (process.env.SWAGGER === 'enable') {
@@ -35,7 +35,8 @@ const configureServer = async (server, models) => {
       {
         plugin: HapiSwagger,
         options: {
-          basePath: '/api',
+          basePath: '/api/v1',
+          grouping: 'tags',
           info: {
             title: 'API Documentation',
             version: '1.0.0'

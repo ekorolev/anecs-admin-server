@@ -6,7 +6,7 @@
 2. Copy `.env.example` file to `.env`
 3. Configure environment variables
 
-# Testing
+## Testing
 
 1. `yarn test`
 
