@@ -19,6 +19,10 @@ const createAnecdotePayload = Joi.object({
 	status: Joi.string().valid(STATUSES).required()
 })
 
+const updateAnecdotePayload = Joi.object({
+	text: Joi.string().required()
+})
+
 const anecdotes = Joi.array().items(anecdote)
 
 exports.list = anecdotes

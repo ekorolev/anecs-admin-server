@@ -34,6 +34,18 @@ module.exports = server => {
       })
       await anecdote.save()
       return anecdote.getVisibleAnecdote()
+    },
+
+    async update (request) {
+      const { role } = request.auth.credentials.user
+      const { id } = request.params
+      const { text } = request.payload
+      if (role!=='admin') return Boom.unauthorized()
+      const anecdote = await Anecdote.findById(id)
+      if (!anecdote) return Boom.notFound()
+      anecdote.text = text
+      await anecdote.save()
+      return anecdote.getVisibleAnecdote()
     }
   }
 }

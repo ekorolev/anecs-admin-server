@@ -45,6 +45,18 @@ module.exports = server => {
           payload: validation.createAnecdotePayload
         }
       }
+    },
+    {
+      method: 'POST',
+      path: '/{id}',
+      handler: handlers.update,
+      options: {
+        description: 'Update an anecdote',
+        tags: ['api', 'anecdotes'],
+        validate: {
+          payload: validation.updateAnecdotePayload
+        }
+      }
     }
   ]
 }

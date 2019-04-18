@@ -101,6 +101,32 @@ describe('Check anecdotes api works well', () => {
     expect(anecdotes[0].status).eq(anecdote.status)
   })
 
+  it('Update an anecdote', async () => {
+    const anecdote = new Models.Anecdote({
+      text: 'some long text',
+      author: 'admin',
+      status: 'PUBLISHED',
+      createdAt: Date.now()
+    })
+    const update = {
+      text: 'edited text',
+    }
+    await anecdote.save()
+    const response = await server.inject({
+      method: 'POST',
+      url: `${prefix}/${anecdote._id}`,
+      headers: {
+        authorization: `Bearer ${token.accessToken}`
+      },
+      payload: update
+    })
+    const newAnecdote = await Models.Anecdote.findById(anecdote._id)
+    const payload = JSON.parse(response.payload)
+    expect(response.statusCode).eq(200)
+    expect(payload.text).eq(update.text)
+    expect(newAnecdote.text).eq(update.text)
+  })
+
   after(async () => {
     await mockedDb.disconnect()
     await server.stop()
