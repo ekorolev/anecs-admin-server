@@ -15,7 +15,7 @@ describe('Check anecdotes api works well', () => {
     Models = await mockedDb.connect()
     server = await configureServer(null, Models)
     await server.start()
-    const user = new Models.User(userFactory.fakeUser())
+    const user = new Models.User(userFactory.fakeUser('admin'))
     await user.save()
     token = Models.Token.createToken(user._id)
     await token.save()
@@ -78,6 +78,27 @@ describe('Check anecdotes api works well', () => {
     })
     const anecs = await Models.Anecdote.find({})
     expect(anecs.length).eq(0)
+  })
+
+  it('Create an anecdote', async () => {
+    const anecdote = {
+      text: 'some long text',
+      status: 'PUBLISHED'
+    }
+    const response = await server.inject({
+      method: 'POST',
+      url: `${prefix}`,
+      headers: {
+        authorization: `Bearer ${token.accessToken}`
+      },
+      payload: anecdote
+    })
+    const anecdotes = await Models.Anecdote.find()
+    expect(response.statusCode).eq(200)
+    expect(anecdotes.length).eq(1)
+    expect(anecdotes[0].text).eq(anecdote.text)
+    expect(anecdotes[0].author).eq('admin')
+    expect(anecdotes[0].status).eq(anecdote.status)
   })
 
   after(async () => {

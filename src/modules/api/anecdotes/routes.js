@@ -33,6 +33,18 @@ module.exports = server => {
           }
         }
       }
+    },
+    {
+      method: 'POST',
+      path: '/',
+      handler: handlers.create,
+      options: {
+        description: 'Create a new anecdote',
+        tags: ['api', 'anecdotes'],
+        validate: {
+          payload: validation.createAnecdotePayload
+        }
+      }
     }
   ]
 }

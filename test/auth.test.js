@@ -136,7 +136,7 @@ describe('Check authentication works well', () => {
   })
 
   it('Try to request /me with expired accessToken', async () => {
-    const user = new Models.User(userFactory.fakeUser())
+    const user = new Models.User(userFactory.fakeUser('username'))
     await user.save()
     const token = Models.Token.createToken(user._id)
     token.accessTokenExpiresIn = Date.now() - 1
@@ -154,7 +154,7 @@ describe('Check authentication works well', () => {
   })
 
   it('Try to refresh expired accessToken', async () => {
-    const user = new Models.User(userFactory.fakeUser())
+    const user = new Models.User(userFactory.fakeUser('username'))
     await user.save()
     const token = Models.Token.createToken(user._id)
     token.accessTokenExpiresIn = Date.now() - 1
@@ -175,7 +175,7 @@ describe('Check authentication works well', () => {
   })
 
   it('Try to refresh expired refreshToken', async () => {
-    const user = new Models.User(userFactory.fakeUser())
+    const user = new Models.User(userFactory.fakeUser('username'))
     await user.save()
     const token = Models.Token.createToken(user._id)
     token.accessTokenExpiresIn = Date.now() - 1

@@ -1,6 +1,5 @@
-const faker = require('faker')
-
-exports.fakeUser = () => ({
-  username: faker.random.word(),
-  passwordHash: faker.random.uuid()
+exports.fakeUser = (username) => ({
+  username,
+  passwordHash: username,
+  role: 'admin'
 })
