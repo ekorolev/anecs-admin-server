@@ -19,7 +19,7 @@ const configureServer = async (server, models) => {
   await server.register({
     plugin: cors,
     options: {
-      headers: ['Accept', 'Content-Type', 'Authentication']
+      headers: ['Accept', 'Content-Type', 'Authentication', 'authorization']
     }
   })
   server.app.models = models
